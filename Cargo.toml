@@ -1,0 +1,10 @@
+[package]
+name = "waveshare_usb_to_spi_adapter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+
+[build-dependencies]
+bindgen = "0.70.1"
