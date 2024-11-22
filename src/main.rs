@@ -57,11 +57,11 @@ fn main()
         if fd >= 0 {
             let mut CH347_SPI = mSpiCfgS {
                 iMode: 1,
-                iClock: 4,
+                iClock: 2,
                 iByteOrder: 1,
                 iSpiWriteReadInterval: 0,
                 iSpiOutDefaultData: 0xff,
-                iChipSelect: 0x80,
+                iChipSelect: 0x00,
                 CS1Polarity: 0,
                 CS2Polarity: 0,
                 iIsAutoDeativeCS: 0,
@@ -85,8 +85,14 @@ fn main()
             loop {
                 let mut data_to_send: [u8; 4] = [b'a', b'b', b'c', b'd'];
                 let io_buffer = data_to_send.as_mut_ptr() as *mut c_void;
-                // let result = CH347SPI_WriteRead(fd, true, 0x80, 4, io_buffer);
-                let result = CH347SPI_Write(fd, true, 0x80, 4, 4, io_buffer);
+                let result = CH347SPI_Write(
+                    fd,
+                    true,
+                    0x00,
+                    4,
+                    4,
+                    io_buffer,
+                );
                 println!("Result: {}", result);
                 thread::sleep(Duration::from_millis(1000));
             }

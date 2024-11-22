@@ -50,3 +50,67 @@ sudo udevadm trigger
 #### Verify
 
 `ls -l /dev/ch34x_pis6`
+
+
+## Connection with Raspberry pico
+
+<img src="2024-11-22_17-25.png" width="700" height="500">
+
+for slave (raspberry pico)
+
+```rust
+ let _spi_can_sclk = pins.gpio18.into_function::<hal::gpio::FunctionSpi>();
+let _spi_can_mosi = pins.gpio19.into_function::<hal::gpio::FunctionSpi>();
+let _spi_can_miso = pins.gpio16.into_function::<hal::gpio::FunctionSpi>();
+let mut _spi_can_cs = pins.gpio17.into_push_pull_output();
+let spi_can_pin_layout = (_spi_can_mosi, _spi_can_miso, _spi_can_sclk);
+let spi0_can = hal::Spi::<_, _, _, 8>::new(pac.SPI0, spi_can_pin_layout);
+    let mut spi_can = spi0_can.init_slave(
+        &mut pac.RESETS,
+        FrameFormat::MotorolaSpi(MODE_1)
+    );
+
+//in loop
+
+let mut data: [u8; 4] = [b'\0'; 4];
+
+match spi_can.read(&mut data) {
+Ok(d) => {
+println!("data: {:?}", data);
+}
+Err(_) => {
+println!("error");
+}
+}
+```
+
+
+for master (CH347)
+
+```rust
+  let mut CH347_SPI = mSpiCfgS {
+iMode: 1,
+iClock: 2,
+iByteOrder: 1,
+iSpiWriteReadInterval: 0,
+iSpiOutDefaultData: 0xff,
+iChipSelect: 0x00,
+CS1Polarity: 0,
+CS2Polarity: 0,
+iIsAutoDeativeCS: 0,
+iActiveDelay: 0,
+iDelayDeactive: 0,
+};
+
+
+let mut data_to_send: [u8; 4] = [b'a', b'b', b'c', b'd'];
+let io_buffer = data_to_send.as_mut_ptr() as * mut c_void;
+let result = CH347SPI_Write(
+fd,
+true,
+0x00,
+4,
+4,
+io_buffer,
+);
+```
