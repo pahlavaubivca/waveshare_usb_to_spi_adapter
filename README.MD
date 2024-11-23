@@ -3,6 +3,7 @@
 ## Copy libch347.so to /usr/local/lib
 
 Add to .profile or .bashrc
+
 ```bash
 export LD_LIBRARY_PATH="/usr/local/lib"
 ```
@@ -10,12 +11,13 @@ export LD_LIBRARY_PATH="/usr/local/lib"
 Run `source .profile` or `source .bashrc`
 
 Copy libch347.so to /usr/local/lib
+
 ```bash
 sudo cp lib/libch347.so /usr/local/lib
 ```
 
-
 ## Run with sudo
+
 `cd target/debug`
 
 `sudo LD_LIBRARY_PATH=$LD_LIBRARY_PATH ./waveshare_usb_to_spi_adapter`
@@ -23,6 +25,7 @@ sudo cp lib/libch347.so /usr/local/lib
 ## Rootless mode
 
 #### Create Group
+
 `sudo groupadd ch34x`
 
 #### Apply target user to the group
@@ -38,6 +41,7 @@ sudo cp lib/libch347.so /usr/local/lib
 ```bash
 ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55db", MODE="664", GROUP="ch34x"
 ```
+
 > note: idVendor and idProduct can be found using `lsusb`
 
 Reload udev rules
@@ -51,7 +55,6 @@ sudo udevadm trigger
 
 `ls -l /dev/ch34x_pis6`
 
-
 ## Connection with Raspberry pico
 
 <img src="2024-11-22_17-25.png" width="700" height="500">
@@ -64,26 +67,25 @@ let _spi_can_mosi = pins.gpio19.into_function::<hal::gpio::FunctionSpi>();
 let _spi_can_miso = pins.gpio16.into_function::<hal::gpio::FunctionSpi>();
 let mut _spi_can_cs = pins.gpio17.into_push_pull_output();
 let spi_can_pin_layout = (_spi_can_mosi, _spi_can_miso, _spi_can_sclk);
-let spi0_can = hal::Spi::<_, _, _, 8>::new(pac.SPI0, spi_can_pin_layout);
-    let mut spi_can = spi0_can.init_slave(
-        &mut pac.RESETS,
-        FrameFormat::MotorolaSpi(MODE_1)
-    );
+let spi0_can = hal::Spi::<_, _, _, 8 >::new(pac.SPI0, spi_can_pin_layout);
+let mut spi_can = spi0_can.init_slave(
+& mut pac.RESETS,
+FrameFormat::MotorolaSpi(MODE_1)
+);
 
 //in loop
 
 let mut data: [u8; 4] = [b'\0'; 4];
 
-match spi_can.read(&mut data) {
+match spi_can.read( & mut data) {
 Ok(d) => {
-println!("data: {:?}", data);
+println ! ("data: {:?}", data);
 }
 Err(_) => {
-println!("error");
+println ! ("error");
 }
 }
 ```
-
 
 for master (CH347)
 
@@ -114,3 +116,8 @@ true,
 io_buffer,
 );
 ```
+
+## Read more
+
+[ch347](https://www.waveshare.com/wiki/USB_TO_UART/I2C/SPI/JTAG#SPI_Interface_Usage)
+[ch347 manual](https://files.waveshare.com/upload/2/2b/CH347-applicationa-development-manual-en.pdf)
